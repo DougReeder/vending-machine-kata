@@ -27,13 +27,21 @@ class VendingMachineTest {
     }
 
 
+    @Test
+    void shouldInitiallyDisplayInsertCoin() {
+        assertEquals(0, vendingMachine.getTotalCents());
+        assertEquals(0, vendingMachine.getCoinReturn().size());
+        assertEquals("INSERT COIN", vendingMachine.getDisplay());
+    }
+
     @ParameterizedTest
-    @CsvSource({"2.000,5", "2.268,10", "5.670,25"})
-    void shouldAllowValidCoinInsertion(double weight, int cents) {
+    @CsvSource({"2.000,5,$0.05", "2.268,10,$0.10", "5.670,25,$0.25"})
+    void shouldAllowValidCoinInsertion(double weight, int cents, String display) {
         vendingMachine.insertCoin(weight);
 
         assertEquals(cents, vendingMachine.getTotalCents());
         assertEquals(0, vendingMachine.getCoinReturn().size());
+        assertEquals(display, vendingMachine.getDisplay());
     }
 
     @ParameterizedTest
@@ -49,19 +57,27 @@ class VendingMachineTest {
     }
 
     @ParameterizedTest
-    @CsvSource({"2.05,5, 2.51,5, 5.671,30, 2.200,40",
-            "1.8,0, 8.1,0, 5.7,25, 5.58,50"})
-    void shouldAcceptAndRejectMultipleCoins(double weight1, int centsTotal1, double weight2, int centsTotal2, double weight3, int centsTotal3, double weight4, int centsTotal4) {
+    @CsvSource({"2.05,5,$0.05, 2.51,5,$0.05, 5.671,30,$0.30, 2.200,40,$0.40",
+            "1.8,0,INSERT COIN, 8.1,0,INSERT COIN, 5.7,25,$0.25, 5.58,50,$0.50"})
+    void shouldAcceptAndRejectMultipleCoins(double weight1, int centsTotal1, String display1,
+                                            double weight2, int centsTotal2, String display2,
+                                            double weight3, int centsTotal3, String display3,
+                                            double weight4, int centsTotal4, String display4) {
         vendingMachine.insertCoin(weight1);
         assertEquals(centsTotal1, vendingMachine.getTotalCents());
+        assertEquals(display1, vendingMachine.getDisplay());
 
         vendingMachine.insertCoin(weight2);
         assertEquals(centsTotal2, vendingMachine.getTotalCents());
+        assertEquals(display2, vendingMachine.getDisplay());
 
         vendingMachine.insertCoin(weight3);
         assertEquals(centsTotal3, vendingMachine.getTotalCents());
+        assertEquals(display3, vendingMachine.getDisplay());
 
         vendingMachine.insertCoin(weight4);
         assertEquals(centsTotal4, vendingMachine.getTotalCents());
+        assertEquals(display4, vendingMachine.getDisplay());
     }
+
 }
