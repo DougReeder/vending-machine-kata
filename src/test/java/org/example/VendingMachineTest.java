@@ -48,4 +48,20 @@ class VendingMachineTest {
         assertEquals(expected, vendingMachine.getCoinReturn());
     }
 
- }
+    @ParameterizedTest
+    @CsvSource({"2.05,5, 2.51,5, 5.671,30, 2.200,40",
+            "1.8,0, 8.1,0, 5.7,25, 5.58,50"})
+    void shouldAcceptAndRejectMultipleCoins(double weight1, int centsTotal1, double weight2, int centsTotal2, double weight3, int centsTotal3, double weight4, int centsTotal4) {
+        vendingMachine.insertCoin(weight1);
+        assertEquals(centsTotal1, vendingMachine.getTotalCents());
+
+        vendingMachine.insertCoin(weight2);
+        assertEquals(centsTotal2, vendingMachine.getTotalCents());
+
+        vendingMachine.insertCoin(weight3);
+        assertEquals(centsTotal3, vendingMachine.getTotalCents());
+
+        vendingMachine.insertCoin(weight4);
+        assertEquals(centsTotal4, vendingMachine.getTotalCents());
+    }
+}
