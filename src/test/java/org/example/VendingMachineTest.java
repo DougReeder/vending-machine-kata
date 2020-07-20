@@ -80,4 +80,46 @@ class VendingMachineTest {
         assertEquals(display4, vendingMachine.getDisplay());
     }
 
+    @Test
+    void shouldDisplayErrorWhenSlotNotConfigured() {
+        final String slotId = "Z";
+        final int cents = 900;
+        vendingMachine.totalCents = cents;
+
+        vendingMachine.buttonPushed(slotId);
+
+        assertEquals(cents, vendingMachine.getTotalCents());
+        assertEquals(0, vendingMachine.getDispensed().size());
+        assertEquals("ERROR", vendingMachine.getDisplay());
+    }
+
+    @ParameterizedTest
+    @CsvSource({"95,A", "45,B", "60,DD", "0,A"})
+    void shouldNotDispenseProductWhenLesserAmountDeposited(int depositedCents, String slotId) {
+        vendingMachine.totalCents = depositedCents;
+        final int initialStockAvailable = vendingMachine.getStockAvailable(slotId);
+
+        vendingMachine.buttonPushed(slotId);
+
+        assertEquals(depositedCents, vendingMachine.getTotalCents());
+        assertEquals(false, vendingMachine.getDispensed().contains(slotId));
+        assertEquals(initialStockAvailable, vendingMachine.getStockAvailable(slotId));
+        Slot slot = vendingMachine.slotMap.get(slotId);
+        assertEquals("PRICE " + VendingMachine.DOLLARS_AND_CENTS.format(slot.centsCost/100.0), vendingMachine.getDisplay());
+    }
+
+    @ParameterizedTest
+    @CsvSource({"100,A", "50,B", "65,DD"})
+    void shouldDispenseProductWhenExactAmountDeposited(int cents, String slotId) {
+        vendingMachine.totalCents = cents;
+        final int initialStockAvailable = vendingMachine.getStockAvailable(slotId);
+
+        vendingMachine.buttonPushed(slotId);
+
+        assertEquals(0, vendingMachine.getTotalCents());
+        assertEquals(true, vendingMachine.getDispensed().contains(slotId));
+        assertEquals(initialStockAvailable-1, vendingMachine.getStockAvailable(slotId));
+        assertEquals("THANK YOU", vendingMachine.getDisplay());
+        // TODO: test for deposited amount displayed after delay (async testing requires extra care)
+    }
 }
