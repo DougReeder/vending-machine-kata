@@ -172,4 +172,12 @@ class VendingMachineTest {
         assertEquals("SOLD OUT", vendingMachine.getDisplay());
         assertEquals(0, vendingMachine.getCoinReturn().size());
     }
+
+    @Test
+    void shouldDisplayExactChangeOnlyWhenChangeCantBeMade() {
+        vendingMachine.exactChangeOnly = true;
+        vendingMachine.setDisplayFromTotalCents();
+
+        assertEquals("EXACT CHANGE ONLY", vendingMachine.getDisplay());
+    }
 }

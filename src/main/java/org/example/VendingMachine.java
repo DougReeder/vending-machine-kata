@@ -24,6 +24,7 @@ import org.example.CoinData;
 public class VendingMachine {
     // members are package-private to allow administratively adding credit, technician test mode, etc.
     // The requirements don't include anything that would make setters and getters of value.
+    boolean exactChangeOnly = false;   // TODO: model coins available for change
     final List<Double> activeCoins = new ArrayList<Double>();
     int totalCents = 0;
     final List<Double> coinReturn = new ArrayList<Double>();
@@ -36,6 +37,7 @@ public class VendingMachine {
     static final String THANK_YOU = "THANK YOU";
     static final String PRICE = "PRICE";
     static final String SOLD_OUT = "SOLD OUT";
+    static final String EXACT_CHANGE_ONLY = "EXACT CHANGE ONLY";
     static final DecimalFormat DOLLARS_AND_CENTS = new DecimalFormat("$0.00");
 
     public VendingMachine() {
@@ -89,6 +91,8 @@ public class VendingMachine {
     void setDisplayFromTotalCents() {
         if (totalCents > 0) {
             display = DOLLARS_AND_CENTS.format(totalCents/100.0);
+        } else if (exactChangeOnly) {
+            display = EXACT_CHANGE_ONLY;
         } else {
             display = INSERT_COIN;
         }
@@ -100,6 +104,11 @@ public class VendingMachine {
             throw new ModelException("Nothing configured for slot " + slotId);
         }
         return slot.quantity;
+    }
+
+    /** TODO: derive from model of coins available */
+    boolean getExactChangeOnly() {
+        return exactChangeOnly;
     }
 
     public void buttonPushed(String slotId) {
