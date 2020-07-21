@@ -24,6 +24,7 @@ import org.example.CoinData;
 public class VendingMachine {
     // members are package-private to allow administratively adding credit, technician test mode, etc.
     // The requirements don't include anything that would make setters and getters of value.
+    final List<Double> activeCoins = new ArrayList<Double>();
     int totalCents = 0;
     final List<Double> coinReturn = new ArrayList<Double>();
     String display = INSERT_COIN;
@@ -54,11 +55,21 @@ public class VendingMachine {
         }
 
         if (valid) {
+            activeCoins.add(weight);
             totalCents += cents;
             setDisplayFromTotalCents();
         } else {
             coinReturn.add(weight);
         }
+    }
+
+    public void returnCoins() {
+        for (double weight: activeCoins) {
+            coinReturn.add(weight);
+        }
+        activeCoins.clear();
+        totalCents = 0;
+        setDisplayFromTotalCents();
     }
 
     /** Given that totalCents is package-private, this method is perhaps redundant */
@@ -97,6 +108,7 @@ public class VendingMachine {
             return;
         }
         if (totalCents >= slot.centsCost) {
+            activeCoins.clear();
             totalCents -= slot.centsCost;
             dispensed.add(slotId);
             --slot.quantity;

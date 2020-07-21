@@ -80,6 +80,22 @@ class VendingMachineTest {
         assertEquals(display4, vendingMachine.getDisplay());
     }
 
+    @ParameterizedTest
+    @CsvSource({"5.600,2.300,2.200", "2.05,2.510,2.25"})
+    void shouldReturnCoinsWhenButtonPressed(double weight1, double weight2, double weight3) {
+        vendingMachine.insertCoin(weight1);
+        vendingMachine.insertCoin(weight2);
+        vendingMachine.insertCoin(weight3);
+
+        vendingMachine.returnCoins();
+
+        assertEquals(0, vendingMachine.getTotalCents());
+        assertEquals(3, vendingMachine.getCoinReturn().size());
+        assertTrue(vendingMachine.getCoinReturn().contains(weight1));
+        assertEquals("INSERT COIN", vendingMachine.getDisplay());
+
+    }
+
     @Test
     void shouldDisplayErrorWhenSlotNotConfigured() {
         final String slotId = "Z";
