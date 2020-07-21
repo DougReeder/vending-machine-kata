@@ -110,7 +110,7 @@ class VendingMachineTest {
     }
 
     @ParameterizedTest
-    @CsvSource({"95,A", "45,B", "60,DD", "0,A"})
+    @CsvSource({"95,A", "45,B", "0,A"})
     void shouldNotDispenseProductWhenLesserAmountDeposited(int depositedCents, String slotId) {
         vendingMachine.totalCents = depositedCents;
         final int initialStockAvailable = vendingMachine.getStockAvailable(slotId);
@@ -126,7 +126,7 @@ class VendingMachineTest {
     }
 
     @ParameterizedTest
-    @CsvSource({"100,A", "50,B", "65,DD"})
+    @CsvSource({"100,A", "50,B"})
     void shouldDispenseProductWhenExactAmountDeposited(int cents, String slotId) {
         vendingMachine.totalCents = cents;
         final int initialStockAvailable = vendingMachine.getStockAvailable(slotId);
@@ -142,7 +142,7 @@ class VendingMachineTest {
     }
 
     @ParameterizedTest
-    @CsvSource({"105,A,1", "110,A,1", "200,B,3", "100,DD,2"})
+    @CsvSource({"105,A,1", "110,A,1", "200,B,3"})
     void shouldDispenseProductAndChangeWhenExtraMoneyDeposited(int initialCents, String slotId, int minChangeCoins) {
         vendingMachine.totalCents = initialCents;
         final int initialStockAvailable = vendingMachine.getStockAvailable(slotId);
@@ -157,5 +157,19 @@ class VendingMachineTest {
         // However, we could use the weights to calculate a value for the returned coins.
         assertTrue(minChangeCoins <= vendingMachine.getCoinReturn().size());
         // TODO: test for "INSERT COIN" displayed after delay (async testing requires extra care)
+    }
+
+    @Test
+    void shouldNotDispenseWhenSoldOut() {
+        String slotId = "DD";
+        vendingMachine.totalCents = 70;
+
+        vendingMachine.buttonPushed(slotId);
+
+        assertEquals(70, vendingMachine.getTotalCents());
+        assertFalse(vendingMachine.getDispensed().contains(slotId));
+        assertEquals(0, vendingMachine.getStockAvailable(slotId));
+        assertEquals("SOLD OUT", vendingMachine.getDisplay());
+        assertEquals(0, vendingMachine.getCoinReturn().size());
     }
 }

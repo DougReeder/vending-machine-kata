@@ -35,6 +35,7 @@ public class VendingMachine {
     static final String ERROR = "ERROR";
     static final String THANK_YOU = "THANK YOU";
     static final String PRICE = "PRICE";
+    static final String SOLD_OUT = "SOLD OUT";
     static final DecimalFormat DOLLARS_AND_CENTS = new DecimalFormat("$0.00");
 
     public VendingMachine() {
@@ -107,7 +108,9 @@ public class VendingMachine {
             display = ERROR;
             return;
         }
-        if (totalCents >= slot.centsCost) {
+        if (slot.quantity < 1) {
+            display = SOLD_OUT;
+        } else if (totalCents >= slot.centsCost) {
             activeCoins.clear();
             totalCents -= slot.centsCost;
             dispensed.add(slotId);
