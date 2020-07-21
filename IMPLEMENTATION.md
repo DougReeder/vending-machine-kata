@@ -1,6 +1,18 @@
 Vending Machine Kata Implementation
 ===================================
 
+Asynchronous Behavior
+---------------------
+A real vending machine would display THANK YOU or SOLD OUT for some small
+length of time before returning to INSERT COIN (or EXACT CHANGE ONLY).
+This requires asynchronous code (which I can write) and asyncronous tests
+(which I did not have time to familiarize myself with).
+
+As written, the exercise permits "subsequent checks of the display" to display
+the new message. This could be handled by setting and clearing a flag, but
+that's not how a real vending machine operates, so I deferred implementing that.
+
+
 Exact Change Only
 -----------------
 As written, the requirements are incomplete - 
