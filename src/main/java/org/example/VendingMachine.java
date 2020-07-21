@@ -46,7 +46,7 @@ public class VendingMachine {
     public void insertCoin(double weight) {
         boolean valid = false;
         int cents = 0;
-        for (CoinData coinData: CoinData.validCoins) {
+        for (CoinData coinData: CoinData.validCoins.values()) {
             if (weight >= coinData.minWeight && weight <= coinData.maxWeight) {
                 valid = true;
                 cents = coinData.cents;
@@ -102,6 +102,19 @@ public class VendingMachine {
             --slot.quantity;
             display = THANK_YOU;
             // TODO: call setDisplayFromTotalCents() after delay
+            // TODO: track actual coins on hand
+            while (totalCents >= 25) {
+                totalCents -= 25;
+                coinReturn.add(CoinData.validCoins.get(25).nominalWeight);
+            }
+            while (totalCents >= 10) {
+                totalCents -= 10;
+                coinReturn.add(CoinData.validCoins.get(10).nominalWeight);
+            }
+            while (totalCents >= 5) {
+                totalCents -= 5;
+                coinReturn.add(CoinData.validCoins.get(5).nominalWeight);
+            }
         } else {
             display = PRICE + " " + VendingMachine.DOLLARS_AND_CENTS.format(slot.centsCost/100.0);
             // TODO: call setDisplayFromTotalCents() after delay

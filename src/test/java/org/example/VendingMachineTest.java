@@ -104,6 +104,7 @@ class VendingMachineTest {
         assertEquals(depositedCents, vendingMachine.getTotalCents());
         assertEquals(false, vendingMachine.getDispensed().contains(slotId));
         assertEquals(initialStockAvailable, vendingMachine.getStockAvailable(slotId));
+        assertEquals(0, vendingMachine.getCoinReturn().size());
         Slot slot = vendingMachine.slotMap.get(slotId);
         assertEquals("PRICE " + VendingMachine.DOLLARS_AND_CENTS.format(slot.centsCost/100.0), vendingMachine.getDisplay());
     }
@@ -119,7 +120,26 @@ class VendingMachineTest {
         assertEquals(0, vendingMachine.getTotalCents());
         assertEquals(true, vendingMachine.getDispensed().contains(slotId));
         assertEquals(initialStockAvailable-1, vendingMachine.getStockAvailable(slotId));
+        assertEquals(0, vendingMachine.getCoinReturn().size());
         assertEquals("THANK YOU", vendingMachine.getDisplay());
-        // TODO: test for deposited amount displayed after delay (async testing requires extra care)
+        // TODO: test for "INSERT COIN" displayed after delay (async testing requires extra care)
+    }
+
+    @ParameterizedTest
+    @CsvSource({"105,A,1", "110,A,1", "200,B,3", "100,DD,2"})
+    void shouldDispenseProductAndChangeWhenExtraMoneyDeposited(int initialCents, String slotId, int minChangeCoins) {
+        vendingMachine.totalCents = initialCents;
+        final int initialStockAvailable = vendingMachine.getStockAvailable(slotId);
+
+        vendingMachine.buttonPushed(slotId);
+
+        assertEquals(0, vendingMachine.getTotalCents());
+        assertEquals(true, vendingMachine.getDispensed().contains(slotId));
+        assertEquals(initialStockAvailable-1, vendingMachine.getStockAvailable(slotId));
+        assertEquals("THANK YOU", vendingMachine.getDisplay());
+        // We can't assert the exact number of returned coins or their weights without knowing the change-making algorithm.
+        // However, we could use the weights to calculate a value for the returned coins.
+        assertTrue(minChangeCoins <= vendingMachine.getCoinReturn().size());
+        // TODO: test for "INSERT COIN" displayed after delay (async testing requires extra care)
     }
 }
